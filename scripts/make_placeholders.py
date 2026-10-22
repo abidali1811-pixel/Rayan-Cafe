@@ -9,6 +9,7 @@ PALETTES = [
     ("pour.jpg", (48, 32, 24), (232, 196, 148), "A slow pour-over"),
     ("breakfast.jpg", (90, 58, 36), (244, 224, 196), "Eggs, toast, and light"),
     ("seats.jpg", (36, 44, 38), (168, 186, 164), "Window seats"),
+    ("coffee-croissant.jpg", (62, 39, 28), (232, 196, 148), "Coffee and a croissant"),
 ]
 
 

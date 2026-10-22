@@ -23,4 +23,5 @@ GALLERY_SEED = [
     {"filename": "pour.jpg", "caption": "A slow pour-over"},
     {"filename": "breakfast.jpg", "caption": "Eggs, toast, and light"},
     {"filename": "seats.jpg", "caption": "Window seats"},
+    {"filename": "coffee-croissant.jpg", "caption": "Coffee and a croissant"},
 ]

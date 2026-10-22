@@ -7,7 +7,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from config import Config
-from db import SessionLocal, create_tables, init_engine
+from db import SessionLocal, create_tables, get_engine, init_engine
 from models import GalleryImage, MenuItem
 from seed_data import GALLERY_SEED, MENU_SEED
 from make_placeholders import ensure_placeholders
@@ -27,14 +27,14 @@ def seed(force: bool = False):
             for row in MENU_SEED:
                 db.add(MenuItem(**row))
 
-        has_gallery = db.query(GalleryImage).first() is not None
-        if not has_gallery or force:
-            if force:
-                db.query(GalleryImage).delete()
-            for row in GALLERY_SEED:
+        if force:
+            db.query(GalleryImage).delete()
+        existing_gallery = {row.filename for row in db.query(GalleryImage.filename).all()}
+        for row in GALLERY_SEED:
+            if row["filename"] not in existing_gallery:
                 db.add(GalleryImage(**row))
         db.commit()
-        print(f"Ready. Engine={cfg.DB_ENGINE} url={cfg.sqlalchemy_url()}")
+        print(f"Ready. Database dialect={get_engine().dialect.name}")
     finally:
         SessionLocal.remove()
 
