@@ -9,3 +9,5 @@ static/uploads/*
 !static/uploads/.gitkeep
 *.db
 .DS_Store
+.neon
+node_modules/

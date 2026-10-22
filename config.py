@@ -64,6 +64,12 @@ class Config:
 
     def sqlalchemy_url(self) -> str:
         if self.DATABASE_URL:
+            # psycopg 3 is the PostgreSQL driver installed by this project.
+            # SQLAlchemy's bare postgresql:// URL otherwise selects psycopg2.
+            if self.DATABASE_URL.startswith("postgres://"):
+                return "postgresql+psycopg://" + self.DATABASE_URL[len("postgres://"):]
+            if self.DATABASE_URL.startswith("postgresql://"):
+                return "postgresql+psycopg://" + self.DATABASE_URL[len("postgresql://"):]
             return self.DATABASE_URL
 
         engine = self.DB_ENGINE
