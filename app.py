@@ -66,6 +66,10 @@ def create_app(config: Config | None = None) -> Flask:
     def shutdown_session(_exc=None):
         SessionLocal.remove()
 
+    @app.get("/favicon.ico")
+    def favicon():
+        return redirect(url_for("static", filename="favicon.svg"))
+
     @app.get("/")
     def home():
         db = SessionLocal()
