@@ -11,6 +11,7 @@
       <a href="{{ url_for('admin_menu') }}" {% if request.endpoint == 'admin_menu' %}aria-current="page"{% endif %}>Menu &amp; prices</a>
       <a href="{{ url_for('admin_gallery') }}" {% if request.endpoint == 'admin_gallery' %}aria-current="page"{% endif %}>Gallery</a>
       <a href="{{ url_for('admin_bookings') }}" {% if request.endpoint == 'admin_bookings' %}aria-current="page"{% endif %}>Bookings</a>
+      <a href="{{ url_for('admin_accounts') }}" {% if request.endpoint == 'admin_accounts' %}aria-current="page"{% endif %}>Admin users</a>
     </nav>
     <form class="admin-logout" method="post" action="{{ url_for('admin_logout') }}">
       <button class="btn" type="submit">Log out</button>

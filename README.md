@@ -75,10 +75,9 @@ Edit `.env` and set at least:
 - `FLASK_SECRET_KEY`
 - `DB_ENGINE` (`mysql` or `postgres`)
 - Database host, name, user, and password (or a full `DATABASE_URL`)
-- `ADMIN_USERNAME` and `ADMIN_PASSWORD`
 - `CHAT_PROVIDER=gemini`, `GEMINI_API_KEY`, and `GEMINI_MODEL` for Gemini replies; or set `CHAT_PROVIDER=openai` with `AI_API_KEY`, `AI_API_BASE`, and `AI_MODEL` for an OpenAI-compatible API
 
-Admin credentials are read only from `.env`. They are never hardcoded.
+Admin accounts are stored in the database with hashed passwords. After initializing a fresh database, run `python scripts/create_admin.py` to create the first account. Signed-in admins can change their password and create additional admin users at `/admin/accounts`.
 
 ### 3. Create the database schema
 
@@ -116,7 +115,15 @@ python scripts/init_db.py --force
 
 Seed items include espresso, cappuccino, green tea, pancakes, and eggs and toast. Change them later in **Admin → Menu & prices**.
 
-### 5. Run the site
+### 5. Create the first admin account
+
+```bash
+python scripts/create_admin.py
+```
+
+The script prompts for a username and password without storing either in `.env`.
+
+### 6. Run the site
 
 ```bash
 python app.py

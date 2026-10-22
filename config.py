@@ -33,9 +33,6 @@ class Config:
         "Tue–Fri 7:00–15:00 · Sat–Sun 8:00–16:00 · Closed Monday",
     )
 
-    ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "owner")
-    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
-
     DB_ENGINE = os.getenv("DB_ENGINE", "postgres").strip().lower()
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_NAME = os.getenv("DB_NAME", "hearth_steam")

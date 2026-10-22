@@ -199,6 +199,7 @@ h2 { font-size: 1.6rem; }
   display: grid;
   gap: 0.8rem;
 }
+.admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
 .stack-form label, .booking-admin label { display: grid; gap: 0.3rem; }
 input, select {
   font: inherit;
@@ -380,7 +381,7 @@ input, select {
 }
 
 @media (max-width: 800px) {
-  .hero-grid, .form-layout, .contact-grid, .inline-edit { grid-template-columns: 1fr; }
+  .hero-grid, .form-layout, .contact-grid, .inline-edit, .admin-grid { grid-template-columns: 1fr; }
   .stats { grid-template-columns: 1fr; }
   .admin-layout { grid-template-columns: 1fr; align-content: start; }
   .admin-sidebar { position: static; height: auto; padding: .8rem 1rem; gap: .8rem; }

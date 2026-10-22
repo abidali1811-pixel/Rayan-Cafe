@@ -15,8 +15,6 @@ def app(tmp_path):
     cfg.SECRET_KEY = "test-secret"
     cfg.DB_ENGINE = "sqlite"
     cfg.DATABASE_URL = f"sqlite:///{tmp_path / 'test.db'}"
-    cfg.ADMIN_USERNAME = "owner"
-    cfg.ADMIN_PASSWORD = "test-admin-pass"
     cfg.AI_API_KEY = ""
     cfg.UPLOAD_DIR = tmp_path / "uploads"
     cfg.UPLOAD_DIR.mkdir()

@@ -2,6 +2,13 @@ CREATE DATABASE hearth_steam;
 
 -- Connect to hearth_steam, then:
 
+CREATE TABLE IF NOT EXISTS admin_users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(80) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS menu_items (
   id SERIAL PRIMARY KEY,
   category VARCHAR(80) NOT NULL,

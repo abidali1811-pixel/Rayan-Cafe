@@ -4,7 +4,6 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 from pathlib import Path
-from secrets import compare_digest
 from uuid import uuid4
 
 from flask import (
@@ -18,12 +17,14 @@ from flask import (
     url_for,
 )
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from chatbot import answer_question
 from config import Config
 from db import SessionLocal, create_tables, init_engine
-from models import Booking, GalleryImage, MenuItem
+from models import AdminUser, Booking, GalleryImage, MenuItem
 
 cfg = Config()
 
@@ -40,14 +41,18 @@ def create_app(config: Config | None = None) -> Flask:
     init_engine(config.sqlalchemy_url())
 
     def cafe_context():
-        return {"cafe": config, "logged_in": bool(session.get("admin"))}
+        return {
+            "cafe": config,
+            "logged_in": bool(session.get("admin_user_id")),
+            "admin_username": session.get("admin_username", ""),
+        }
 
     app.context_processor(cafe_context)
 
     def login_required(view):
         @wraps(view)
         def wrapped(*args, **kwargs):
-            if not session.get("admin"):
+            if not session.get("admin_user_id"):
                 return redirect(url_for("admin_login", next=request.path))
             return view(*args, **kwargs)
 
@@ -150,17 +155,14 @@ def create_app(config: Config | None = None) -> Flask:
     @app.route("/admin/login", methods=["GET", "POST"])
     def admin_login():
         if request.method == "POST":
-            username = request.form.get("username", "")
+            username = request.form.get("username", "").strip()
             password = request.form.get("password", "")
-            expected_user = config.ADMIN_USERNAME
-            expected_pass = config.ADMIN_PASSWORD
-            if not expected_pass:
-                flash("Admin password is not set in .env", "error")
-                return render_template("admin/login.html"), 500
-            user_ok = compare_digest(username, expected_user)
-            pass_ok = compare_digest(password, expected_pass)
-            if user_ok and pass_ok:
-                session["admin"] = True
+            db = SessionLocal()
+            user = db.scalar(select(AdminUser).where(AdminUser.username == username))
+            if user and check_password_hash(user.password_hash, password):
+                session.clear()
+                session["admin_user_id"] = user.id
+                session["admin_username"] = user.username
                 return redirect(request.args.get("next") or url_for("admin_dashboard"))
             flash("Those credentials do not match.", "error")
         return render_template("admin/login.html")
@@ -169,6 +171,56 @@ def create_app(config: Config | None = None) -> Flask:
     def admin_logout():
         session.clear()
         return redirect(url_for("home"))
+
+    @app.route("/admin/accounts", methods=["GET", "POST"])
+    @login_required
+    def admin_accounts():
+        db = SessionLocal()
+        current_user = db.get(AdminUser, session.get("admin_user_id"))
+        if current_user is None:
+            session.clear()
+            return redirect(url_for("admin_login"))
+
+        if request.method == "POST":
+            action = request.form.get("action")
+            if action == "change_password":
+                current_password = request.form.get("current_password", "")
+                new_password = request.form.get("new_password", "")
+                confirm_password = request.form.get("confirm_password", "")
+                if not check_password_hash(current_user.password_hash, current_password):
+                    flash("Current password is incorrect.", "error")
+                elif len(new_password) < 12:
+                    flash("Choose a password with at least 12 characters.", "error")
+                elif new_password != confirm_password:
+                    flash("The new passwords do not match.", "error")
+                else:
+                    current_user.password_hash = generate_password_hash(new_password)
+                    db.commit()
+                    flash("Password changed.", "success")
+            elif action == "create_user":
+                username = request.form.get("username", "").strip()
+                password = request.form.get("password", "")
+                confirm_password = request.form.get("confirm_password", "")
+                if not username or len(username) > 80:
+                    flash("Enter a username up to 80 characters long.", "error")
+                elif len(password) < 12:
+                    flash("Choose a password with at least 12 characters.", "error")
+                elif password != confirm_password:
+                    flash("The passwords do not match.", "error")
+                elif db.scalar(select(AdminUser.id).where(AdminUser.username == username)):
+                    flash("That username is already in use.", "error")
+                else:
+                    db.add(AdminUser(username=username, password_hash=generate_password_hash(password)))
+                    try:
+                        db.commit()
+                        flash("Admin user created.", "success")
+                    except IntegrityError:
+                        db.rollback()
+                        flash("That username is already in use.", "error")
+            return redirect(url_for("admin_accounts"))
+
+        users = db.scalars(select(AdminUser).order_by(AdminUser.username)).all()
+        return render_template("admin/accounts.html", users=users)
 
     @app.get("/admin")
     @login_required
