@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <title>{% block title %}{{ cafe.CAFE_NAME }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  {% if not (logged_in and request.path.startswith('/admin')) %}<header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{ url_for('home') }}">
+        <span class="brand-mark">RC</span>
+        <span>
+          <strong>{{ cafe.CAFE_NAME }}</strong>
+          <small>{{ cafe.CAFE_TAGLINE }}</small>
+        </span>
+      </a>
+      <nav class="nav">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('menu') }}">Menu</a>
+        <a href="{{ url_for('gallery') }}">Gallery</a>
+        <a href="{{ url_for('booking') }}">Booking</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+        {% if logged_in %}
+        <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>{% endif %}
+
+  <main id="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="wrap flash-list">
+        {% for category, message in messages %}
+        <p class="flash flash-{{ category }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if not (logged_in and request.path.startswith('/admin')) %}<footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>{{ cafe.CAFE_NAME }} · {{ cafe.CAFE_ADDRESS }}</p>
+      <p>{{ cafe.CAFE_HOURS }}</p>
+    </div>
+  </footer>
+
+  {% include "chat_widget.html" %}
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>{% endif %}
+</body>
+</html>

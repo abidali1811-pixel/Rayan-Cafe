@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Book a table · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Reservations</p>
+    <h1>Request a table</h1>
+    <p>Choose your date, time, and group size, then send us a request. We will confirm by phone or email. This is not online ordering.</p>
+  </div>
+</section>
+<section class="wrap section form-layout">
+  <form class="stack-form" method="post" action="{{ url_for('booking') }}">
+    <label>
+      Name
+      <input name="name" required value="{{ form.get('name', '') }}">
+    </label>
+    <label>
+      Phone or email
+      <input name="contact" required value="{{ form.get('contact', '') }}">
+    </label>
+    <div class="form-row">
+      <label>
+        Date
+        <input type="date" name="date" required value="{{ form.get('date', '') }}">
+      </label>
+      <label>
+        Time
+        <input type="time" name="time" required value="{{ form.get('time', '') }}">
+      </label>
+      <label>
+        Party size
+        <input type="number" name="party_size" min="1" max="12" required value="{{ form.get('party_size', '2') }}">
+      </label>
+    </div>
+    <button class="btn availability-check" type="button" id="check-availability">Check time availability</button>
+    <p id="availability-result" class="availability-result" role="status" aria-live="polite"></p>
+    <button class="btn btn-primary" type="submit">Send request</button>
+  </form>
+  <aside class="hours-card">
+    <h2>When we are open</h2>
+    <p>{{ cafe.CAFE_HOURS }}</p>
+    <h3>Booking details</h3>
+    <p>Bookings are requests until our team confirms them by phone or email. The time check looks for another pending or confirmed request at that exact time; it does not confirm a table or check seating capacity.</p>
+    <p>For parties larger than 12, call <a href="tel:{{ cafe.CAFE_PHONE }}">{{ cafe.CAFE_PHONE }}</a>.</p>
+    <p>For orders or menu prices, see our <a href="{{ url_for('menu') }}">menu</a>; this form is for table requests only.</p>
+  </aside>
+</section>
+<script>
+  document.getElementById("check-availability").addEventListener("click", async () => {
+    const result = document.getElementById("availability-result");
+    const date = document.querySelector('[name="date"]').value;
+    const time = document.querySelector('[name="time"]').value;
+    const partySize = document.querySelector('[name="party_size"]').value;
+    if (!date || !time || !partySize) {
+      result.textContent = "Choose a date, time, and party size first.";
+      result.className = "availability-result availability-error";
+      return;
+    }
+    result.textContent = "Checking…";
+    try {
+      const query = new URLSearchParams({ date, time, party_size: partySize });
+      const response = await fetch(`{{ url_for('check_availability') }}?${query}`);
+      const data = await response.json();
+      result.textContent = data.message;
+      result.className = `availability-result ${data.available ? "availability-open" : "availability-error"}`;
+    } catch {
+      result.textContent = "Could not check right now. You can still send a request.";
+      result.className = "availability-result availability-error";
+    }
+  });
+</script>
+{% endblock %}

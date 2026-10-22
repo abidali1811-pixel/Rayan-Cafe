@@ -1,0 +1,30 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Bookings · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block admin_body %}
+<section class="wrap section">
+  <h1>Booking requests</h1>
+  {% for b in bookings %}
+  <form class="booking-admin" method="post">
+    <input type="hidden" name="id" value="{{ b.id }}">
+    <p><strong>{{ b.name }}</strong> · {{ b.contact }}</p>
+    <p>{{ b.booking_date }} at {{ b.booking_time.strftime('%H:%M') }} · party of {{ b.party_size }}</p>
+    <p class="muted">Requested {{ b.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    <label>
+      Status
+      <select name="status">
+        {% for status in ['pending', 'confirmed', 'cancelled'] %}
+        <option value="{{ status }}" {% if b.status == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Notes
+      <input name="notes" value="{{ b.notes }}">
+    </label>
+    <button class="btn btn-primary" type="submit">Update</button>
+  </form>
+  {% else %}
+  <p>No requests yet.</p>
+  {% endfor %}
+</section>
+{% endblock %}

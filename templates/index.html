@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ cafe.CAFE_NAME }} · Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Your neighbourhood café</p>
+      <h1>Slow mornings.<br><em>Good coffee.</em></h1>
+      <p class="lede">{{ cafe.CAFE_NAME }} is a little room for slow mornings — espresso at the bar, pots of tea by the window, and breakfast worth lingering over.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ url_for('menu') }}">Explore the menu <span aria-hidden="true">→</span></a>
+        <a class="btn" href="{{ url_for('booking') }}">Book a table</a>
+      </div>
+      <p class="hero-note"><span aria-hidden="true">✦</span> Made fresh, served with care</p>
+    </div>
+    <div class="hero-visual" role="img" aria-label="Fresh coffee and breakfast at a cosy café">
+      <div class="hero-stamp"><span>Fresh</span><span>every</span><strong>morning</strong></div>
+      <div class="hero-caption"><span>THE GOOD PART OF YOUR DAY</span><span>☕ &nbsp;🍳</span></div>
+    </div>
+  </div>
+  <div class="wrap hero-info"><span>Come on in</span><span>{{ cafe.CAFE_HOURS }}</span><a href="{{ url_for('contact') }}">{{ cafe.CAFE_ADDRESS }} ↗</a></div>
+</section>
+
+<section class="wrap section welcome-section">
+  <div class="section-head">
+    <div><p class="eyebrow">A little something for everyone</p><h2>Made for your kind of morning</h2></div>
+    <a class="text-link" href="{{ url_for('menu') }}">See the whole menu <span aria-hidden="true">→</span></a>
+  </div>
+  <ul class="card-grid">
+    {% for item in highlights %}
+    <li class="menu-card">
+      <div class="menu-card-image {% if 'breakfast' in item.category|lower or 'egg' in item.name|lower or 'pancake' in item.name|lower %}food-breakfast{% elif 'tea' in item.name|lower %}food-tea{% else %}food-coffee{% endif %}" role="img" aria-label="{{ item.name }}"></div>
+      <div class="menu-card-content"><p class="eyebrow">{{ item.category }}</p><h3>{{ item.name }}</h3><p>{{ item.description }}</p><p class="price">{{ item.price_display() }}</p></div>
+    </li>
+    {% else %}
+    <li>The menu is being set. Check back after seeding the database.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="wrap feature-strip">
+  <div class="feature-photo" role="img" aria-label="A warm, welcoming café interior"></div>
+  <div class="feature-copy"><p class="eyebrow">Stay a little longer</p><h2>Your table is waiting.</h2><p>Catch up over coffee, make a morning of it, or just take a quiet moment for yourself. We’ll put the kettle on.</p><a class="btn btn-primary" href="{{ url_for('booking') }}">Find your table</a></div>
+</section>
+
+<section class="wrap section gallery-section">
+  <div class="section-head"><div><p class="eyebrow">The atmosphere</p><h2>A peek inside</h2></div><a class="text-link" href="{{ url_for('gallery') }}">Visit our gallery <span aria-hidden="true">→</span></a></div>
+  {% set stock_photos = {
+    'counter.jpg': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85',
+    'pour.jpg': 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1000&q=85',
+    'breakfast.jpg': 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=1000&q=85',
+    'seats.jpg': 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1000&q=85'
+  } %}
+  <ul class="gallery-grid">
+    {% for photo in photos %}
+    <li><figure class="gallery-card"><img src="{{ stock_photos.get(photo.filename, url_for('static', filename='uploads/' + photo.filename)) }}" data-fallback="{{ url_for('static', filename='uploads/' + photo.filename) }}" onerror="this.onerror=null;this.src=this.dataset.fallback" alt="{{ photo.caption or 'Café interior' }}"><figcaption>{{ photo.caption }}</figcaption></figure></li>
+    {% else %}
+    <li><figure class="gallery-card"><img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=900&q=85" alt="Coffee being poured in a café"><figcaption>Good coffee, made slowly</figcaption></figure></li>
+    <li><figure class="gallery-card"><img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=85" alt="Warm and welcoming café interior"><figcaption>A cosy corner to call yours</figcaption></figure></li>
+    <li><figure class="gallery-card"><img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=900&q=85" alt="Pancake breakfast with fresh fruit"><figcaption>Breakfast worth waking up for</figcaption></figure></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

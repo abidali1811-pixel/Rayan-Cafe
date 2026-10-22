@@ -1,0 +1,33 @@
+CREATE DATABASE IF NOT EXISTS hearth_steam
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE hearth_steam;
+
+CREATE TABLE IF NOT EXISTS menu_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  category VARCHAR(80) NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  description VARCHAR(255) NOT NULL DEFAULT '',
+  price DECIMAL(8,2) NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  INDEX idx_menu_category (category)
+);
+
+CREATE TABLE IF NOT EXISTS gallery_images (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  filename VARCHAR(255) NOT NULL,
+  caption VARCHAR(255) NOT NULL DEFAULT '',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  contact VARCHAR(160) NOT NULL,
+  booking_date DATE NOT NULL,
+  booking_time TIME NOT NULL,
+  party_size INT NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'pending',
+  notes TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

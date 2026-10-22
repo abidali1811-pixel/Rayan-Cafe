@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Contact · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Find us</p>
+    <h1>Contact &amp; location</h1>
+  </div>
+</section>
+<section class="wrap section contact-grid">
+  <article class="hours-card">
+    <h2>Address</h2>
+    <p>{{ cafe.CAFE_ADDRESS }}</p>
+    <h2>Hours</h2>
+    <p>{{ cafe.CAFE_HOURS }}</p>
+  </article>
+  <article class="hours-card">
+    <h2>Contact</h2>
+    <p><a href="tel:{{ cafe.CAFE_PHONE }}">{{ cafe.CAFE_PHONE }}</a></p>
+    <p><a href="mailto:{{ cafe.CAFE_EMAIL }}">{{ cafe.CAFE_EMAIL }}</a></p>
+    <p><a class="btn btn-primary" href="{{ url_for('booking') }}">Book a table</a></p>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Menu · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block content %}
+<section class="menu-hero">
+  <div class="wrap menu-hero-copy"><p class="eyebrow">Fresh from our kitchen</p><h1>Good things<br><em>to eat & drink.</em></h1><p>Made with care, best enjoyed at your own pace.</p></div>
+  <div class="menu-hero-photo" role="img" aria-label="A fresh breakfast spread with coffee"></div>
+</section>
+<section class="wrap section menu-page-section">
+  <div class="menu-intro"><p class="eyebrow">The menu</p><h2>A seat at the table for every appetite</h2><p>Ask us about today’s favourites. We’re always happy to help.</p></div>
+  {% for category, items in groups.items() %}
+  <article class="menu-group">
+    <div class="menu-group-heading"><div><p class="eyebrow">Made fresh daily</p><h2>{{ category }}</h2></div><span aria-hidden="true">✦</span></div>
+    <ul class="rate-list">
+      {% for item in items %}
+      <li class="menu-row">
+        <div><strong>{{ item.name }}</strong><p>{{ item.description }}</p></div>
+        <span class="price">{{ item.price_display() }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% else %}<p>No menu items yet. The owner can add them in admin after seeding.</p>{% endfor %}
+  <div class="menu-booking"><p>Made you hungry?</p><a class="btn btn-primary" href="{{ url_for('booking') }}">Save yourself a table <span aria-hidden="true">→</span></a></div>
+</section>
+{% endblock %}

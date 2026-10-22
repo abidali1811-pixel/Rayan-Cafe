@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Edit menu · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block admin_body %}
+<section class="wrap section">
+  <h1>Menu and prices</h1>
+  <form class="stack-form card-form" method="post">
+    <input type="hidden" name="action" value="create">
+    <div class="form-row">
+      <label>Category <input name="category" value="Coffee" required></label>
+      <label>Name <input name="name" required></label>
+      <label>Price (₹) <input name="price" inputmode="decimal" placeholder="150" required></label>
+      <label>Order <input type="number" name="sort_order" value="0"></label>
+    </div>
+    <label>Description <input name="description"></label>
+    <button class="btn btn-primary" type="submit">Add item</button>
+  </form>
+
+  {% for category, items in groups.items() %}
+  <h2>{{ category }}</h2>
+  {% for item in items %}
+  <form class="inline-edit" method="post">
+    <input type="hidden" name="id" value="{{ item.id }}">
+    <input name="category" value="{{ item.category }}" aria-label="Category">
+    <input name="name" value="{{ item.name }}" aria-label="Name">
+    <input name="description" value="{{ item.description }}" aria-label="Description">
+    <input name="price" value="{{ '%.0f'|format(item.price) }}" aria-label="Price in rupees">
+    <input type="number" name="sort_order" value="{{ item.sort_order }}" aria-label="Sort">
+    <button class="btn btn-primary" name="action" value="update" type="submit">Save</button>
+    <button class="btn btn-danger" name="action" value="delete" type="submit">Remove</button>
+  </form>
+  {% endfor %}
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block admin_body %}
+<section class="wrap section">
+  <h1>Kitchen desk</h1>
+  <ul class="stats">
+    <li><strong>{{ menu_count }}</strong> menu items</li>
+    <li><strong>{{ photo_count }}</strong> gallery images</li>
+    <li><strong>{{ pending }}</strong> pending bookings</li>
+  </ul>
+  <h2>Latest requests</h2>
+  <table class="plain-table">
+    <thead>
+      <tr><th>When</th><th>Name</th><th>Party</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.booking_date }} {{ b.booking_time.strftime('%H:%M') }}</td>
+        <td>{{ b.name }}</td>
+        <td>{{ b.party_size }}</td>
+        <td>{{ b.status }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No bookings yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

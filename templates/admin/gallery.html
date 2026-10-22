@@ -1,0 +1,43 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gallery admin · {{ cafe.CAFE_NAME }}{% endblock %}
+{% block admin_body %}
+<section class="wrap section">
+  <h1>Gallery images</h1>
+  {% set stock_photos = {
+    'counter.jpg': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85',
+    'pour.jpg': 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1000&q=85',
+    'breakfast.jpg': 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=1000&q=85',
+    'seats.jpg': 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1000&q=85'
+  } %}
+  <form class="stack-form card-form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="upload">
+    <label>Photo <input type="file" name="image" accept="image/*" required></label>
+    <label>Caption <input name="caption"></label>
+    <button class="btn btn-primary" type="submit">Upload</button>
+  </form>
+
+  <ul class="admin-gallery">
+    {% for image in images %}
+    <li class="admin-photo">
+      <img src="{{ stock_photos.get(image.filename, url_for('static', filename='uploads/' + image.filename)) }}" data-fallback="{{ url_for('static', filename='uploads/' + image.filename) }}" onerror="this.onerror=null;this.src=this.dataset.fallback" alt="{{ image.caption or 'Cafe photograph' }}">
+      <form method="post">
+        <input type="hidden" name="id" value="{{ image.id }}">
+        <input type="hidden" name="action" value="caption">
+        <input name="caption" value="{{ image.caption }}">
+        <button class="btn" type="submit">Save caption</button>
+      </form>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ image.id }}">
+        <input type="hidden" name="action" value="replace">
+        <input type="file" name="image" accept="image/*" required>
+        <button class="btn" type="submit">Replace</button>
+      </form>
+      <form method="post">
+        <input type="hidden" name="id" value="{{ image.id }}">
+        <button class="btn btn-danger" name="action" value="delete" type="submit">Remove</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
